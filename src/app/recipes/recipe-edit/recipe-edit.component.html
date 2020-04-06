@@ -1,0 +1,118 @@
+<form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+  <div class="row">
+    <div class="col-12">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter Name"
+          id="name"
+          formControlName="name"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="form-group">
+        <label for="imagePath">Image Path</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter Image Path"
+          id="imagePath"
+          formControlName="imagePath"
+          #imagePath
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <img [src]="imagePath.value" class="img-fluid" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          type="text"
+          class="form-control"
+          placeholder="Enter Description"
+          id="description"
+          rows="6"
+          formControlName="description"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12" formArrayName="ingredients">
+      <div
+        class="row mb-3"
+        *ngFor="let item of formArrayControls; let i = index"
+        [formGroupName]="i"
+      >
+        <div class="col-7">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter Ingredient Name"
+            id="ingName"
+            formControlName="name"
+          />
+        </div>
+
+        <div class="col-3">
+          <input type="number" class="form-control" formControlName="amount" />
+        </div>
+
+        <div class="col-2">
+          <button
+            type="button"
+            class="btn btn-danger"
+            type="button"
+            (click)="onIngredientDelete(i)"
+          >
+            x
+          </button>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-12">
+          <button
+            class="btn btn-info"
+            (click)="onAddIngredient()"
+            type="button"
+          >
+            Add Ingredient
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <div class="row mb-5">
+    <div class="col-12">
+      <button
+        class="btn btn-primary mr-3"
+        type="submit"
+        [disabled]="recipeForm.invalid"
+      >
+        {{ editMode ? "Update" : "Save" }}
+      </button>
+      <button class="btn btn-warning mr-3" type="button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button class="btn btn-danger" type="button" (click)="deleteRecipe()">
+        Delete
+      </button>
+    </div>
+  </div>
+</form>

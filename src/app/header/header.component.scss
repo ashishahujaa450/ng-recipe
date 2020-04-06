@@ -1,0 +1,12 @@
+.nav-item {
+  &.dropdown.show {
+    .dropdown-menu {
+      display: block;
+      left: -80px;
+    }
+  }
+}
+
+a {
+  cursor: pointer;
+}
