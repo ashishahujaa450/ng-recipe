@@ -38,7 +38,7 @@ export class RecipeService {
   }
 
   replceRecipes(newList: Recipe[]) {
-    this.recipes = new Array();
+    this.recipes.splice(0, 100);
 
     newList.forEach((elm) => {
       this.recipes.push(elm);
