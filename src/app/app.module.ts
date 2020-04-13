@@ -5,22 +5,16 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 
 import { AppComponent } from "./app.component";
 import { HeaderComponent } from "./header/header.component";
-import { DropdownDirective } from "./shared/dropdown.directive";
+
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthComponent } from "./auth/auth.component";
-import { LoadingSpinnerComponent } from "./shared/loading-spinner/loading-spinner.component";
 import { AuthInterceptor } from "./auth/auth-interceptor.service";
 import { RecipeModule } from "./recipes/recipe.module";
 import { ShoppingModule } from "./shopping-list/shopping.module";
+import { SharedModule } from "./shared/shared.module";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    DropdownDirective,
-    AuthComponent,
-    LoadingSpinnerComponent,
-  ],
+  declarations: [AppComponent, HeaderComponent, AuthComponent],
   imports: [
     AppRoutingModule,
     BrowserModule,
@@ -29,6 +23,7 @@ import { ShoppingModule } from "./shopping-list/shopping.module";
     HttpClientModule,
     RecipeModule,
     ShoppingModule,
+    SharedModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
