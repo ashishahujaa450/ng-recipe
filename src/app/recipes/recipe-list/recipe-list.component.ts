@@ -9,7 +9,7 @@ import { Router, ActivatedRoute } from "@angular/router";
   styleUrls: ["./recipe-list.component.scss"],
 })
 export class RecipeListComponent implements OnInit {
-  private recipes: Recipe[];
+  public recipes: Recipe[];
 
   constructor(
     private recipeService: RecipeService,
