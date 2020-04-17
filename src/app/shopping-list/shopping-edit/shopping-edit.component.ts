@@ -3,17 +3,21 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { Ingredient } from "src/app/shared/ingredient.model";
 import { ShoppingListService } from "../shopping-list.service";
 import { NgForm } from "@angular/forms";
 import { Subscription } from "rxjs";
+import { Store } from "@ngrx/store";
+
+import * as ShoppingListAction from "./../store/shopping.action";
+import * as FromShoppingList from "./../store/shopping.reducer";
 
 @Component({
   selector: "app-shopping-edit",
   templateUrl: "./shopping-edit.component.html",
-  styleUrls: ["./shopping-edit.component.scss"]
+  styleUrls: ["./shopping-edit.component.scss"],
 })
 export class ShoppingEditComponent implements OnInit, OnDestroy {
   @ViewChild("ingForm", { static: false }) slForm: NgForm;
@@ -22,30 +26,42 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   editeditemIndex: number;
   editedItem: Ingredient;
 
-  constructor(private shoppingListRecipe: ShoppingListService) {}
+  constructor(
+    private shoppingListRecipe: ShoppingListService,
+    private store: Store<FromShoppingList.AppState>
+  ) {}
 
   ngOnInit() {
-    this.editsubscription = this.shoppingListRecipe.startEditing.subscribe(
-      (index: number) => {
-        this.editMode = true;
-        this.editeditemIndex = index;
-        this.editedItem = this.shoppingListRecipe.getIngredientById(index);
+    this.editsubscription = this.store
+      .select("shoppingListStore")
+      .subscribe((stateData) => {
+        if (stateData.editedIngredientIndex > -1) {
+          this.editMode = true;
+          this.editeditemIndex = stateData.editedIngredientIndex;
+          this.editedItem = stateData.editedIngredient;
 
-        this.slForm.setValue({
-          ingredientName: this.editedItem.name,
-          ingredientAmount: this.editedItem.amount
-        });
-      }
-    );
+          this.slForm.setValue({
+            ingredientName: this.editedItem.name,
+            ingredientAmount: this.editedItem.amount,
+          });
+        } else {
+          this.editMode = false;
+        }
+      });
   }
 
   onClear() {
     this.slForm.form.reset();
     this.editMode = false;
+    this.store.dispatch(new ShoppingListAction.StopEdit());
   }
 
   onDelete() {
-    this.shoppingListRecipe.removeIngredient(this.editeditemIndex);
+    this.store.dispatch(
+      new ShoppingListAction.DeleteIngredient(this.editeditemIndex)
+    );
+
+    // this.shoppingListRecipe.removeIngredient(this.editeditemIndex);
     this.onClear();
   }
 
@@ -58,12 +74,20 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     );
 
     if (this.editMode) {
-      this.shoppingListRecipe.updateIngredient(
-        this.editeditemIndex,
-        newIngredient
+      // this.shoppingListRecipe.updateIngredient(
+      //   this.editeditemIndex,
+      //   newIngredient
+      // );
+
+      this.store.dispatch(
+        new ShoppingListAction.UpdateIngredient({
+          index: this.editeditemIndex,
+          newIngredient: newIngredient,
+        })
       );
     } else {
-      this.shoppingListRecipe.addIngredient(newIngredient);
+      // this.shoppingListRecipe.addIngredient(newIngredient);
+      this.store.dispatch(new ShoppingListAction.AddIngredient(newIngredient));
     }
 
     this.editMode = false;
@@ -72,5 +96,6 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.editsubscription.unsubscribe();
+    this.store.dispatch(new ShoppingListAction.StopEdit());
   }
 }

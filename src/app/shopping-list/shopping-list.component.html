@@ -5,7 +5,10 @@
     <div class="list-group">
       <a
         class="list-group-item list-group-item-action"
-        *ngFor="let ingredientItem of ingredients; let i = index"
+        *ngFor="
+          let ingredientItem of (ingredients | async).ingredients;
+          let i = index
+        "
         (click)="editIngredient(i)"
         >{{ ingredientItem.name }} : {{ ingredientItem.amount }}</a
       >

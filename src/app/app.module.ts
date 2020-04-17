@@ -8,6 +8,8 @@ import { HeaderComponent } from "./header/header.component";
 import { AppRoutingModule } from "./app-routing.module";
 import { AuthInterceptor } from "./auth/auth-interceptor.service";
 import { SharedModule } from "./shared/shared.module";
+import { StoreModule } from "@ngrx/store";
+import { ShoppingListReducer } from "./shopping-list/store/shopping.reducer";
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -17,6 +19,7 @@ import { SharedModule } from "./shared/shared.module";
     ReactiveFormsModule,
     HttpClientModule,
     SharedModule,
+    StoreModule.forRoot({ shoppingListStore: ShoppingListReducer }),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
