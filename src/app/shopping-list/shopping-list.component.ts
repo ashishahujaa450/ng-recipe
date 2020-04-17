@@ -6,6 +6,7 @@ import { Observable } from "rxjs";
 
 import * as FromShoppingList from "./store/shopping.reducer";
 import * as ShoppingListAction from "./store/shopping.action";
+import { AppState } from "../store/app.reducer";
 @Component({
   selector: "app-shopping-list",
   templateUrl: "./shopping-list.component.html",
@@ -16,7 +17,7 @@ export class ShoppingListComponent implements OnInit {
 
   constructor(
     private shoppingListService: ShoppingListService,
-    private store: Store<FromShoppingList.AppState>
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
