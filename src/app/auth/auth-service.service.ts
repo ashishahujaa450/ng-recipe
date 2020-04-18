@@ -6,6 +6,10 @@ import { throwError, BehaviorSubject } from "rxjs";
 import { User } from "./user.mode";
 import { Router } from "@angular/router";
 
+import * as FromAuthAction from "./store/auth.action";
+import { Store } from "@ngrx/store";
+import { AppState } from "../store/app.reducer";
+
 @Injectable({
   providedIn: "root",
 })
@@ -16,11 +20,15 @@ export class AuthServiceService {
   private loginUrl: string =
     "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
 
-  public user = new BehaviorSubject<User>(null);
+  // public user = new BehaviorSubject<User>(null);
 
   private expirationTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private store: Store<AppState>
+  ) {}
 
   private commonError(errorResponse: HttpErrorResponse) {
     let error = "An unknown error occured!";
@@ -87,7 +95,15 @@ export class AuthServiceService {
       );
 
       if (loadedUser.token) {
-        this.user.next(loadedUser);
+        // this.user.next(loadedUser);
+        this.store.dispatch(
+          new FromAuthAction.Login({
+            email: loadedUser.email,
+            userid: loadedUser.id,
+            token: loadedUser.token,
+            tokenExpiration: new Date(user._tokenExpiration),
+          })
+        );
 
         const expirationTime =
           new Date(user._tokenExpiration).getTime() - new Date().getTime();
@@ -99,7 +115,8 @@ export class AuthServiceService {
   }
 
   public logout() {
-    this.user.next(null);
+    // this.user.next(null);
+    this.store.dispatch(new FromAuthAction.Logout());
     this.router.navigate(["/auth"]);
     localStorage.removeItem("userData");
 
@@ -122,7 +139,15 @@ export class AuthServiceService {
   ) {
     const expireTime = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, id, token, expireTime);
-    this.user.next(user);
+    // this.user.next(user);
+    this.store.dispatch(
+      new FromAuthAction.Login({
+        email: email,
+        userid: id,
+        token: token,
+        tokenExpiration: expireTime,
+      })
+    );
     this.autoLogout(expiresIn * 1000);
     localStorage.setItem("userData", JSON.stringify(user));
   }

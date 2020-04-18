@@ -1,15 +1,11 @@
-import {
-  Component,
-  OnInit,
-  Output,
-  EventEmitter,
-  OnDestroy,
-} from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { DataStorageService } from "../shared/data-storage.service";
 import { AuthServiceService } from "../auth/auth-service.service";
 import { Subscription } from "rxjs";
 import { User } from "../auth/user.mode";
-import { Router } from "@angular/router";
+import { Store } from "@ngrx/store";
+import { AppState } from "../store/app.reducer";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-header",
@@ -21,13 +17,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAuthnticated: boolean = false;
   constructor(
     private dataStorageService: DataStorageService,
-    private authService: AuthServiceService
+    private authService: AuthServiceService,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
-    this.userSub = this.authService.user.subscribe((user: User) => {
-      this.isAuthnticated = user ? true : false;
-    });
+    this.userSub = this.store
+      .select("auth")
+      .pipe(
+        map((authData) => {
+          return authData.user;
+        })
+      )
+      .subscribe((user: User) => {
+        this.isAuthnticated = user ? true : false;
+      });
   }
 
   onLogOut() {

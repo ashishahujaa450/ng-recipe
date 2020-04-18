@@ -9,7 +9,6 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AuthInterceptor } from "./auth/auth-interceptor.service";
 import { SharedModule } from "./shared/shared.module";
 import { StoreModule } from "@ngrx/store";
-import { ShoppingListReducer } from "./shopping-list/store/shopping.reducer";
 import { AppReducer } from "./store/app.reducer";
 
 @NgModule({
