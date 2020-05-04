@@ -10,6 +10,8 @@ import { AuthInterceptor } from "./auth/auth-interceptor.service";
 import { SharedModule } from "./shared/shared.module";
 import { StoreModule } from "@ngrx/store";
 import { AppReducer } from "./store/app.reducer";
+import { EffectsModule } from "@ngrx/effects";
+import { AuthEffect } from "./auth/store/auth.effect";
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -20,6 +22,7 @@ import { AppReducer } from "./store/app.reducer";
     HttpClientModule,
     SharedModule,
     StoreModule.forRoot(AppReducer),
+    EffectsModule.forRoot([AuthEffect]),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

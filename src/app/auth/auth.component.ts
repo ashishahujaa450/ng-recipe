@@ -5,6 +5,10 @@ import { Observable } from "rxjs";
 
 import { AuthServiceService } from "./auth-service.service";
 import { SignUp, AuthResponse } from "./auth.model";
+import { Store } from "@ngrx/store";
+import { AppState } from "../store/app.reducer";
+
+import * as FromAuthActions from "./store/auth.action";
 
 @Component({
   selector: "app-auth",
@@ -16,14 +20,21 @@ export class AuthComponent implements OnInit {
   public isLoading: boolean = false;
   public error: string = null;
 
-  private authObservable: Observable<AuthResponse>;
-
   constructor(
     private authService: AuthServiceService,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select("auth").subscribe((authState) => {
+      this.isLoading = authState.loading;
+
+      if (authState.authError) {
+        this.error = authState.authError;
+      }
+    });
+  }
 
   switchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -45,25 +56,27 @@ export class AuthComponent implements OnInit {
     if (this.isLoginMode) {
       //lets login
       data.returnSecureToken = true;
-      this.authObservable = this.authService.login(data);
+      // this.authObservable = this.authService.login(data);
+      this.store.dispatch(new FromAuthActions.LoginStart(data));
     } else {
       //lets signup
       data.returnSecureToken = true;
-      this.authObservable = this.authService.signUp(data);
+      // this.authObservable = this.authService.signUp(data);
+      this.store.dispatch(new FromAuthActions.SignupStart(data));
     }
 
     //subscribe to obsverable
-    this.authObservable.subscribe(
-      (response: AuthResponse) => {
-        this.isLoading = false;
-        this.router.navigate(["/recipes"]);
-      },
-      (errorMessage) => {
-        console.log(errorMessage);
-        this.error = errorMessage;
-        this.isLoading = false;
-      }
-    );
+    // this.authObservable.subscribe(
+    //   (response: AuthResponse) => {
+    //     this.isLoading = false;
+    //     this.router.navigate(["/recipes"]);
+    //   },
+    //   (errorMessage) => {
+    //     console.log(errorMessage);
+    //     this.error = errorMessage;
+    //     this.isLoading = false;
+    //   }
+    // );
 
     //reset form
     form.form.reset();
